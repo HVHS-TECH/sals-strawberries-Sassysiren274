@@ -15,16 +15,16 @@ function fb_authenticate() {
   firebase.auth()
     .signInWithPopup(provider)
     .then(function (result) {
-      let user = result.user;
-      let name = user.displayName;
-      let email = user.email;
+      GLOBAL_user = result.user;
+      let name = GLOBAL_user.displayName;
+      let email = GLOBAL_user.email;
       console.log(name);
       console.log(email);
 
 
       document.getElementById("welcomeMessage").innerHTML =
         "Welcome to Sal’s Strawberry Saloon, " + name + "!";
-      console.log(user);
+      console.log(GLOBAL_user);
       // })
       // .catch(function (error) {
       //   console.log(error);
@@ -63,19 +63,20 @@ function fb_error() {
 }
 function fb_write() {
 
+  if (!GLOBAL_user) {
+    alert("Please login first!");
+    return;
+  }
 
   let name = document.getElementById("name").value;
   let fruit = document.getElementById("favoriteFruit").value;
   let quantity = document.getElementById("fruitQuantity").value;
 
-
-  firebase.database().ref("customers").push({
+  firebase.database().ref("customers/" + GLOBAL_user.uid).push({
     name: name,
     favoriteFruit: fruit,
     quantity: quantity
   });
 
-
-}
-
-
+  console.log("Data saved!");
+} 
